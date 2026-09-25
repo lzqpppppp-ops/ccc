@@ -187,7 +187,11 @@ jobs:
           echo 'a41c14019761899228e0aaafce1a2afa5cc7f31909205bb5a346a22dcd20c8e2  source.zip' | sha256sum --check
           unzip -q source.zip
       - name: Install Android SDK 35
-        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+        shell: bash
+        run: |
+          SDK_MANAGER=$(find "${ANDROID_HOME:-/usr/local/lib/android/sdk}/cmdline-tools" -path '*/bin/sdkmanager' -type f | sort -V | tail -n 1)
+          test -n "$SDK_MANAGER"
+          "$SDK_MANAGER" 'platforms;android-35' 'build-tools;35.0.0'
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
       - uses: actions/upload-artifact@v4
